@@ -27,7 +27,7 @@ LOC_BLOCK$(cat <<EOF
     }
 EOF
 )
-FP_REPO_NAME="client-side-demos"
+FP_REPO_NAME="pages-site"
 NEW_LOC_BLOCK=$(cat <<EOF
     location / {
         proxy_pass http://hp-svc:6969;
