@@ -7,7 +7,7 @@ services:
     image: akw31108/final-project-image:docker-compose-build-tag
     container_name: fp-c
     ports:
-      - 8081:80
+      - 8081:7901
     volumes:
       - ./volumes/final-project/config/conf.d:/etc/nginx/conf.d
       - ./volumes/final-project/config/nginx.conf:/etc/nginx/nginx.conf
