@@ -5,34 +5,37 @@ rm -rf volumes/final-project/config/*
 mkdir -p volumes/home-page/{config,html}
 rm -rf volumes/home-page/{config,html}/*
 
-docker pull nginx:alpine3.21
-docker run --rm --name temp-nginx -d nginx:alpine3.21 
+docker run --rm -d --name nginx-temp nginx:alpine3.21
 
-docker cp temp-nginx:/etc/nginx/conf.d volumes/final-project/config
-docker cp temp-nginx:/etc/nginx/nginx.conf volumes/final-project/config/nginx.conf
+docker cp nginx-temp:/etc/nginx/conf.d volumes/final-project/config
+docker cp nginx-temp:/etc/nginx/nginx.conf volumes/final-project/config/nginx.conf
 
-docker cp temp-nginx:/etc/nginx/conf.d volumes/home-page/config
-docker cp temp-nginx:/etc/nginx/nginx.conf volumes/home-page/config/nginx.conf
+docker cp nginx-temp:/etc/nginx/conf.d volumes/home-page/config
+docker cp nginx-temp:/etc/nginx/nginx.conf volumes/home-page/config/nginx.conf
 
-docker cp temp-nginx:/usr/share/nginx/html volumes/home-page/
+docker cp nginx-temp:/usr/share/nginx/html volumes/home-page/
 
 docker stop temp-nginx
+
 
 sed -i 's/80/7901/g' volumes/final-project/config/conf.d/default.conf
 
 LOC_BLOCK=$(cat <<EOF
+    location / {
         root   /usr/share/nginx/html;
         index  index.html index.htm;
+    }
 EOF
 )
-FP_REPO_NAME="itp-docker"
+FP_REPO_NAME="pages-site"
+
 NEW_LOC_BLOCK=$(cat <<EOF
     location / {
         proxy_pass http://hp-svc:6969;
     }
     location /$FP_REPO_NAME {
         alias   /usr/share/nginx/html;
-        index index.html index.htm;
+        index  index.html index.htm;
     }
 EOF
 )
@@ -40,6 +43,7 @@ EOF
 perl -0777 -i -pe "s#$LOC_BLOCK#$NEW_LOC_BLOCK#g" volumes/final-project/config/conf.d/default.conf
 
 sed -i 's/80/6969/g' volumes/home-page/config/conf.d/default.conf
+
 OLD_HTML_BODY=$(cat <<EOF
 <body>
 <h1>Welcome to nginx!</h1>
@@ -58,7 +62,7 @@ EOF
 
 NEW_HTML_BODY=$(cat <<EOF
 <body>
-<h1>Home</h1
+<h1>Home</h1>
     <p>Please visit the <a href="/$FP_REPO_NAME/">$FP_REPO_NAME</a> page.</p>
 </body>
 EOF
