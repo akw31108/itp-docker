@@ -15,7 +15,7 @@ docker cp nginx-temp:/etc/nginx/nginx.conf volumes/home-page/config/nginx.conf
 
 docker cp nginx-temp:/usr/share/nginx/html volumes/home-page/
 
-docker stop temp-nginx
+docker stop nginx-temp
 
 
 sed -i 's/80/7901/g' volumes/final-project/config/conf.d/default.conf
